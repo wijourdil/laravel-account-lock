@@ -19,7 +19,7 @@
     verbose="true"
 >
     <testsuites>
-        <testsuite name="VendorName Test Suite">
+        <testsuite name="Wijourdil Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
@@ -33,6 +33,9 @@
             <clover outputFile="build/logs/clover.xml"/>
         </report>
     </coverage>
+    <php>
+        <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
+    </php>
     <logging>
         <junit outputFile="build/report.junit.xml"/>
     </logging>

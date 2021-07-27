@@ -1,36 +1,70 @@
 <?php
 
-namespace VendorName\Skeleton\Tests;
+namespace Wijourdil\LaravelAccountLock\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Foundation\Auth\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orchestra\Testbench\TestCase as Orchestra;
-use VendorName\Skeleton\SkeletonServiceProvider;
+use Wijourdil\LaravelAccountLock\LaravelAccountLockServiceProvider;
 
 class TestCase extends Orchestra
 {
+    use RefreshDatabase;
+
     public function setUp(): void
     {
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'VendorName\\Skeleton\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn(string $modelName) => 'Wijourdil\\LaravelAccountLock\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            SkeletonServiceProvider::class,
+            LaravelAccountLockServiceProvider::class,
         ];
+    }
+
+    protected function defineDatabaseMigrations()
+    {
+        $this->loadLaravelMigrations();
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/Migrations');
     }
 
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
+        config()->set('auth.providers', [
+            'users' => [
+                'driver' => 'eloquent',
+                'model' => User::class,
+            ],
 
-        /*
-        include_once __DIR__.'/../database/migrations/create_skeleton_table.php.stub';
-        (new \CreatePackageTable())->up();
-        */
+            'admins' => [
+                'driver' => 'database',
+                'table' => 'admins',
+            ],
+        ]);
+        config()->set('auth.guards', [
+            'web' => [
+                'driver' => 'session',
+                'provider' => 'users',
+            ],
+
+            'admin' => [
+                'driver' => 'session',
+                'provider' => 'admins',
+            ],
+
+            'api' => [
+                'driver' => 'token',
+                'provider' => 'users',
+                'hash' => false,
+            ],
+        ]);
     }
 }

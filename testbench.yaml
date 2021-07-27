@@ -1,2 +1,2 @@
 providers:
-  - VendorName\Skeleton\SkeletonServiceProvider
+  - Wijourdil\LaravelAccountLock\LaravelAccountLockServiceProvider
