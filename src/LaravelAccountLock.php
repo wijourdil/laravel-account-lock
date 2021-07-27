@@ -97,7 +97,8 @@ class LaravelAccountLock
             return $config['table'];
         } elseif (isset($config['model'])) {
             $class = $config['model'];
-            return (new $class)->getTable();
+
+            return (new $class())->getTable();
         } else {
             throw new InvalidArgumentException("Auth provider '$provider' does not have table or model defined.");
         }

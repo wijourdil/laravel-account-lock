@@ -25,7 +25,7 @@ class LaravelAccountLockController extends BaseController
         $id = $data['id'];
 
         if (empty(DB::table($table)->find($id))) {
-            throw new ModelNotFoundException;
+            throw new ModelNotFoundException();
         }
 
         $this->service->lock($table, $id);

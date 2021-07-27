@@ -16,7 +16,7 @@ class CheckAccountIsNotLockedTest extends TestCase
     {
         parent::setUp();
 
-        Route::get('test', fn() => new Response())->middleware(CheckAccountIsNotLocked::class);
+        Route::get('test', fn () => new Response())->middleware(CheckAccountIsNotLocked::class);
     }
 
     /** @test */

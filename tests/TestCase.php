@@ -17,7 +17,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn(string $modelName) => 'Wijourdil\\LaravelAccountLock\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+            fn (string $modelName) => 'Wijourdil\\LaravelAccountLock\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 

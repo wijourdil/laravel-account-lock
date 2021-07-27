@@ -6,5 +6,4 @@ use Exception;
 
 class InexistingModelException extends Exception
 {
-
 }
