@@ -65,7 +65,7 @@
                 "Wijourdil\\LaravelAccountLock\\LaravelAccountLockServiceProvider"
             ],
             "aliases": {
-                "AccountLock": "Wijourdil\\LaravelAccountLock\\Facades\\AccountLockFacade"
+                "AccountLock": "Wijourdil\\LaravelAccountLock\\Facades\\AccountLock"
             }
         }
     },
