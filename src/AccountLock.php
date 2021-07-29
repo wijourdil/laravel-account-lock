@@ -115,7 +115,7 @@ class AccountLock
         }
 
         foreach (config('auth.guards') as $guardConfig) {
-            $retrievedUser = Auth::createUserProvider($guardConfig['provider'])->retrieveByCredentials([
+            $retrievedUser = Auth::createUserProvider($guardConfig['provider'])?->retrieveByCredentials([
                 $authenticatable->getRememberTokenName() => $authenticatable->getRememberToken(),
                 $authenticatable->getAuthIdentifierName() => $authenticatable->getAuthIdentifier(),
             ]);

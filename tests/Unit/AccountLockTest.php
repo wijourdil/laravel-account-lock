@@ -25,11 +25,11 @@ class AccountLockTest extends TestCase
     {
         $user = UserFactory::new()->create();
 
-        $generatedUrl = (new AccountLock())->generateLockUrl($user, 60);
+        $generatedUrl = (new AccountLock())->generateLockUrl($user);
 
         $this->assertStringStartsWith(route('lock-account'), $generatedUrl);
 
-        $generatedUrlQueryString = parse_url((new AccountLock())->generateLockUrl($user, 60), PHP_URL_QUERY);
+        $generatedUrlQueryString = parse_url($generatedUrl, PHP_URL_QUERY);
 
         parse_str($generatedUrlQueryString, $output);
         $data = Crypt::decrypt($output['data']);
@@ -51,7 +51,7 @@ class AccountLockTest extends TestCase
 
         $this->assertStringStartsWith(route('lock-account'), $generatedUrl);
 
-        $generatedUrlQueryString = parse_url((new AccountLock())->generateLockUrl($user, 60), PHP_URL_QUERY);
+        $generatedUrlQueryString = parse_url($generatedUrl, PHP_URL_QUERY);
 
         parse_str($generatedUrlQueryString, $output);
         $data = Crypt::decrypt($output['data']);
