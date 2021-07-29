@@ -1,12 +1,12 @@
 # 🔒 Laravel Account Lock via URL
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/wijourdil/laravel-account-lock.svg?style=flat-square)](https://packagist.org/packages/wijourdil/laravel-account-lock)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/wijourdil/laravel-account-lock.svg?style=flat)](https://packagist.org/packages/wijourdil/laravel-account-lock)
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/wijourdil/laravel-account-lock/run-tests?label=tests)](https://github.com/wijourdil/laravel-account-lock/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/wijourdil/laravel-account-lock/Check%20&%20fix%20styling?label=code%20style)](https://github.com/wijourdil/laravel-account-lock/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/wijourdil/laravel-account-lock.svg?style=flat-square)](https://packagist.org/packages/wijourdil/laravel-account-lock)
-<a href="https://gitmoji.dev">
-<img src="https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square" alt="Gitmoji">
-</a>
+[![Total Downloads](https://img.shields.io/packagist/dt/wijourdil/laravel-account-lock.svg?style=flat)](https://packagist.org/packages/wijourdil/laravel-account-lock)
+![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/wijourdil/laravel-account-lock)
+![Packagist License](https://img.shields.io/packagist/l/wijourdil/laravel-account-lock)
+[![gitmoji.dev](https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat)](https://gitmoji.dev)
 
 ---
 
