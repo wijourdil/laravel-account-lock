@@ -53,6 +53,8 @@ See the published files in the folder `resources/views/vendor/account-lock`
 To customize the page displayed to a user when he locks successfully his account, you can edit this
 file: `account-locked.blade.php`
 
+ℹ️ It is recommended to check the `mail` variable used in the published template 
+
 ### Strings translations
 
 See the published files in the folder `resources/lang/vendor/account-lock`
