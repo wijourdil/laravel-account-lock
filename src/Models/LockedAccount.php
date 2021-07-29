@@ -18,6 +18,8 @@ class LockedAccount extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $table = 'locked_accounts';
 
     protected $casts = [

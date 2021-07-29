@@ -31,8 +31,8 @@ class TestCase extends Orchestra
     protected function defineDatabaseMigrations()
     {
         $this->loadLaravelMigrations();
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->loadMigrationsFrom(__DIR__ . '/Migrations');
+        (include __DIR__.'/../database/migrations/create_account-lock_table.php.stub')->up();
     }
 
     public function getEnvironmentSetUp($app)

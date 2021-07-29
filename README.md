@@ -1,4 +1,4 @@
-# This is my package LaravelAccountLock
+# 🔒 Laravel Account Lock
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/wijourdil/laravel-account-lock.svg?style=flat-square)](https://packagist.org/packages/wijourdil/laravel-account-lock)
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/wijourdil/laravel-account-lock/run-tests?label=tests)](https://github.com/wijourdil/laravel-account-lock/actions?query=workflow%3Arun-tests+branch%3Amain)
@@ -10,7 +10,15 @@
 
 ---
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+[comment]: <> (This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.)
+This package helps you to easily lock users accounts via links in emails.
+
+[comment]: <> (TODO : ajouter ici un exemple avec des images ?)
+
+## Requirements / Compatibility
+
+* PHP ^8.0
+* Laravel 8
 
 ## Installation
 
@@ -39,50 +47,65 @@ php artisan migrate
 This package comes with a middleware returning a 403 HTTP status if the current authenticated user tries to access a
 protected route.
 
-Use the `account-locked` middleware on the routes you want to protect:
+Use the `account-not-locked` middleware on the routes you want to protect:
 
 ```php
 // web.php
 
-Route::middleware('account-locked')->group(function () {
+Route::middleware('account-not-locked')->group(function () {
     // Your routes here
 });
 ```
 
+### Use the service class
+
+If you want to use the service class, you can either instantiate it yourself or use it like a Facade, depending on your
+preferences.
+
+If you want to instantiate the service / use dependency injection, you must import the class:
+```php
+use Wijourdil\LaravelAccountLock\AccountLock;
+
+$url = (new AccountLock)->generateLockUrl(...);
+```
+
+If you want to use it like a Facade, you just have to call the methods without importing nothing, like:
+```php
+$url = AccountLock::generateLockUrl(...);
+```
+
+## Available methods
+
 ### Generate an URL to lock account
 
 ```php
-$service = new Wijourdil\LaravelAccountLock\LaravelAccountLock();
-$user = User::find(1);
+$user = Auth::user();
 
-$lockUrl = $service->generateLockUrl($user->getTable(), $user->getKey());
+$lockUrl = AccountLock::generateLockUrl($user->getTable(), $user->getKey());
 ```
 
 ### Manually lock an account
 
 ```php
-$service = new Wijourdil\LaravelAccountLock\LaravelAccountLock();
-$user = User::find(1);
+$user = Auth::user();
 
-$service->lock($user->getTable(), $user->getKey());
+AccountLock::lock($user->getTable(), $user->getKey());
 ```
 
 ### Manually unlock an account
 
 ```php
-$service = new Wijourdil\LaravelAccountLock\LaravelAccountLock();
-$user = User::find(1);
+$user = Auth::user();
 
-$service->unlock($user->getTable(), $user->getKey());
+AccountLock::unlock($user->getTable(), $user->getKey());
 ```
 
 ### Check if an account is locked
 
 ```php
-$service = new Wijourdil\LaravelAccountLock\LaravelAccountLock();
-$user = User::find(1);
+$user = Auth::user();
 
-$service->isLocked($user->getTable(), $user->getKey());
+AccountLock::isLocked($user->getTable(), $user->getKey());
 ```
 
 ## Testing
@@ -107,7 +130,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 - [Wilfried Jourdil](https://github.com/wijourdil)
 
-<!--- [All Contributors](../../contributors)-->
+[comment]: <> (- [All Contributors]&#40;../../contributors&#41;)
 
 ## License
 

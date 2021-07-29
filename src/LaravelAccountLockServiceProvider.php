@@ -9,13 +9,22 @@ use Wijourdil\LaravelAccountLock\Http\Middleware\CheckAccountIsNotLocked;
 
 class LaravelAccountLockServiceProvider extends PackageServiceProvider
 {
+    public function register()
+    {
+        parent::register();
+
+        $this->app->bind('laravel-account-lock', function ($app) {
+            return new AccountLock();
+        });
+    }
+
     public function boot(): self
     {
         parent::boot();
 
         /** @var Router $router */
         $router = $this->app->make(Router::class);
-        $router->aliasMiddleware('account-locked', CheckAccountIsNotLocked::class);
+        $router->aliasMiddleware('account-not-locked', CheckAccountIsNotLocked::class);
 
         return $this;
     }

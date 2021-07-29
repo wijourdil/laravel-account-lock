@@ -6,11 +6,11 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Wijourdil\LaravelAccountLock\LaravelAccountLock;
+use Wijourdil\LaravelAccountLock\AccountLock;
 
 class CheckAccountIsNotLocked
 {
-    public function __construct(private LaravelAccountLock $lockService)
+    public function __construct(private AccountLock $lockService)
     {
     }
 

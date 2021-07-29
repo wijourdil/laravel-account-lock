@@ -2,9 +2,9 @@
 
 use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Support\Facades\Route;
-use Wijourdil\LaravelAccountLock\Http\Controllers\LaravelAccountLockController;
+use Wijourdil\LaravelAccountLock\Http\Controllers\AccountLockController;
 
-Route::get('account-lock/lock', [LaravelAccountLockController::class, 'lock'])
+Route::get('account-lock/lock', [AccountLockController::class, 'lock'])
     ->middleware([
         ValidateSignature::class,
     ])

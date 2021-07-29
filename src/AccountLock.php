@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\URL;
 use InvalidArgumentException;
 use Wijourdil\LaravelAccountLock\Exceptions\InexistingModelException;
 
-class LaravelAccountLock
+class AccountLock
 {
     /**
      * @throws InexistingModelException
