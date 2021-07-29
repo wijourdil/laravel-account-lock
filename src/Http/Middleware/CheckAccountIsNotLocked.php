@@ -23,7 +23,7 @@ class CheckAccountIsNotLocked
     {
         foreach (config('auth.guards') as $guardName => $guardConfig) {
             if ($this->someoneIsLoggedInAndLockedForGuard($guardName, $guardConfig)) {
-                abort(Response::HTTP_FORBIDDEN);
+                return response()->view('account-lock::account-locked', [], Response::HTTP_FORBIDDEN);
             }
         }
 

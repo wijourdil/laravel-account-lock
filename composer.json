@@ -1,10 +1,12 @@
 {
     "name": "wijourdil/laravel-account-lock",
-    "description": "This is my package LaravelAccountLock",
+    "description": "This package helps you to easily lock users accounts via links in emails.",
     "keywords": [
         "wijourdil",
         "laravel",
-        "laravel-account-lock"
+        "laravel-account-lock",
+        "account",
+        "account-lock"
     ],
     "homepage": "https://github.com/wijourdil/laravel-account-lock",
     "license": "MIT",

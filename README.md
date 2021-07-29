@@ -1,4 +1,4 @@
-# 🔒 Laravel Account Lock
+# 🔒 Laravel Account Lock via URL
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/wijourdil/laravel-account-lock.svg?style=flat-square)](https://packagist.org/packages/wijourdil/laravel-account-lock)
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/wijourdil/laravel-account-lock/run-tests?label=tests)](https://github.com/wijourdil/laravel-account-lock/actions?query=workflow%3Arun-tests+branch%3Amain)
@@ -67,8 +67,6 @@ protected route.
 Use the `account-not-locked` middleware on the routes you want to protect:
 
 ```php
-// web.php
-
 Route::middleware('account-not-locked')->group(function () {
     // Your routes here
 });
