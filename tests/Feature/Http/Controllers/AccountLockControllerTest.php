@@ -12,7 +12,7 @@ class AccountLockControllerTest extends TestCase
     public function it_locks_account_when_we_reach_the_url()
     {
         $user = UserFactory::new()->create();
-        $url = (new AccountLock())->generateLockUrl($user->getTable(), $user->getKey(), 60);
+        $url = (new AccountLock())->generateLockUrl($user, 60);
 
         $this->get($url)->assertSuccessful();
 
@@ -27,7 +27,7 @@ class AccountLockControllerTest extends TestCase
     public function it_shows_an_error_if_the_url_is_malformed()
     {
         $user = UserFactory::new()->create();
-        $malformedUrl = (new AccountLock())->generateLockUrl($user->getTable(), $user->getKey(), 60) . 'aaa';
+        $malformedUrl = (new AccountLock())->generateLockUrl($user, 60) . 'aaa';
 
         $this->get($malformedUrl)->assertForbidden();
 
@@ -38,7 +38,7 @@ class AccountLockControllerTest extends TestCase
     public function it_shows_an_error_if_the_url_has_expired()
     {
         $user = UserFactory::new()->create();
-        $expiredUrl = (new AccountLock())->generateLockUrl($user->getTable(), $user->getKey(), -60);
+        $expiredUrl = (new AccountLock())->generateLockUrl($user, -60);
 
         $this->get($expiredUrl)->assertForbidden();
 
@@ -49,7 +49,7 @@ class AccountLockControllerTest extends TestCase
     public function it_shows_a_not_found_error_if_the_url_contains_data_for_inexisting_user()
     {
         $user = UserFactory::new()->create();
-        $url = (new AccountLock())->generateLockUrl($user->getTable(), $user->getKey(), 60);
+        $url = (new AccountLock())->generateLockUrl($user, 60);
 
         $user->delete();
 

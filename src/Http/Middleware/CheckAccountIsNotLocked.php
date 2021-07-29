@@ -32,13 +32,8 @@ class CheckAccountIsNotLocked
 
     private function someoneIsLoggedInAndLockedForGuard(string $guardName, array $guardConfig): bool
     {
-        $authenticatedUserId = Auth::guard($guardName)->id();
+        $authenticatedUser = Auth::guard($guardName)->user();
 
-        return
-            null !== $authenticatedUserId &&
-            $this->lockService->isLocked(
-                $this->lockService->tableNameForAuthProvider($guardConfig['provider']),
-                (int)$authenticatedUserId
-            );
+        return (null !== $authenticatedUser && $this->lockService->isLocked($authenticatedUser));
     }
 }

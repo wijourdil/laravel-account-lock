@@ -15,7 +15,7 @@ This package helps you to easily lock users accounts via links in emails.
 
 [comment]: <> (TODO : ajouter ici un exemple avec des images ?)
 
-## Requirements / Compatibility
+## Requirements & Compatibility
 
 * PHP ^8.0
 * Laravel 8
@@ -40,6 +40,23 @@ Then run the migrations with:
 php artisan migrate
 ```
 
+## Configuration & Customization
+
+### Configuration file
+
+See the published config file `config/account-lock.php` to customize available configuration.
+
+### Blade templates
+
+See the published files in the folder `resources/views/vendor/account-lock`
+
+To customize the page displayed to a user when he locks successfully his account, you can edit this
+file: `account-locked.blade.php`
+
+### Strings translations
+
+See the published files in the folder `resources/lang/vendor/account-lock`
+
 ## Usage
 
 ### Apply the middleware to your routes
@@ -63,6 +80,7 @@ If you want to use the service class, you can either instantiate it yourself or 
 preferences.
 
 If you want to instantiate the service / use dependency injection, you must import the class:
+
 ```php
 use Wijourdil\LaravelAccountLock\AccountLock;
 
@@ -70,6 +88,7 @@ $url = (new AccountLock)->generateLockUrl(...);
 ```
 
 If you want to use it like a Facade, you just have to call the methods without importing nothing, like:
+
 ```php
 $url = AccountLock::generateLockUrl(...);
 ```
@@ -80,8 +99,9 @@ $url = AccountLock::generateLockUrl(...);
 
 ```php
 $user = Auth::user();
+$expirationInMinutes = 60 * 24 * 7; // 1 week
 
-$lockUrl = AccountLock::generateLockUrl($user->getTable(), $user->getKey());
+$lockUrl = AccountLock::generateLockUrl($user, $expirationInMinutes);
 ```
 
 ### Manually lock an account
@@ -89,7 +109,7 @@ $lockUrl = AccountLock::generateLockUrl($user->getTable(), $user->getKey());
 ```php
 $user = Auth::user();
 
-AccountLock::lock($user->getTable(), $user->getKey());
+AccountLock::lock($user);
 ```
 
 ### Manually unlock an account
@@ -97,7 +117,7 @@ AccountLock::lock($user->getTable(), $user->getKey());
 ```php
 $user = Auth::user();
 
-AccountLock::unlock($user->getTable(), $user->getKey());
+AccountLock::unlock($user);
 ```
 
 ### Check if an account is locked
@@ -105,13 +125,27 @@ AccountLock::unlock($user->getTable(), $user->getKey());
 ```php
 $user = Auth::user();
 
-AccountLock::isLocked($user->getTable(), $user->getKey());
+AccountLock::isLocked($user);
 ```
 
 ## Testing
 
-```bash
+Run the tests without code coverage:
+
+```shell
 composer test
+```
+
+Run the tests with code coverage:
+
+```shell
+composer test-coverage
+```
+
+Run phpstan code analysis:
+
+```shell
+composer stan
 ```
 
 ## Changelog

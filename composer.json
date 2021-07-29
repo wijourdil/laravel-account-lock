@@ -31,9 +31,15 @@
     },
     "autoload": {
         "psr-4": {
-            "Wijourdil\\LaravelAccountLock\\": "src",
+            "Wijourdil\\LaravelAccountLock\\": [
+                "src",
+                "src/helpers"
+            ],
             "Wijourdil\\LaravelAccountLock\\Database\\Factories\\": "database/factories"
-        }
+        },
+        "files": [
+            "src/helpers/auth.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

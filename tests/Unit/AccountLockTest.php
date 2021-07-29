@@ -2,24 +2,64 @@
 
 namespace Wijourdil\LaravelAccountLock\Tests\Unit;
 
+use Illuminate\Auth\GenericUser;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Crypt;
 use Orchestra\Testbench\Factories\UserFactory;
-use Wijourdil\LaravelAccountLock\Exceptions\InexistingModelException;
 use Wijourdil\LaravelAccountLock\AccountLock;
+use Wijourdil\LaravelAccountLock\Exceptions\InexistingModelException;
 use Wijourdil\LaravelAccountLock\Models\LockedAccount;
 use Wijourdil\LaravelAccountLock\Tests\TestCase;
 
 class AccountLockTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        User::unguard();
+    }
+
     /** @test */
-    public function it_can_generate_an_url()
+    public function it_can_generate_an_url_for_a_model()
     {
         $user = UserFactory::new()->create();
 
-        $this->assertStringStartsWith(
-            route('lock-account'),
-            (new AccountLock())->generateLockUrl($user->getTable(), $user->getKey(), 60)
+        $generatedUrl = (new AccountLock())->generateLockUrl($user, 60);
+
+        $this->assertStringStartsWith(route('lock-account'), $generatedUrl);
+
+        $generatedUrlQueryString = parse_url((new AccountLock())->generateLockUrl($user, 60), PHP_URL_QUERY);
+
+        parse_str($generatedUrlQueryString, $output);
+        $data = Crypt::decrypt($output['data']);
+
+        $this->assertEquals($user->getTable(), $data['table']);
+        $this->assertEquals($user->getKeyName(), $data['identifierName']);
+        $this->assertEquals($user->getKey(), $data['identifierValue']);
+        $this->assertEquals(User::class, $data['type']);
+    }
+
+    /** @test */
+    public function it_can_generate_an_url_for_a_generic_user()
+    {
+        $user = new GenericUser(
+            UserFactory::new()->create()->toArray()
         );
+
+        $generatedUrl = (new AccountLock())->generateLockUrl($user, 60);
+
+        $this->assertStringStartsWith(route('lock-account'), $generatedUrl);
+
+        $generatedUrlQueryString = parse_url((new AccountLock())->generateLockUrl($user, 60), PHP_URL_QUERY);
+
+        parse_str($generatedUrlQueryString, $output);
+        $data = Crypt::decrypt($output['data']);
+
+        $this->assertEquals('users', $data['table']);
+        $this->assertEquals($user->getAuthIdentifierName(), $data['identifierName']);
+        $this->assertEquals($user->getAuthIdentifier(), $data['identifierValue']);
+        $this->assertEquals(GenericUser::class, $data['type']);
     }
 
     /** @test */
@@ -28,7 +68,7 @@ class AccountLockTest extends TestCase
         $user = UserFactory::new()->create();
         $this->assertDatabaseCount('locked_accounts', 0);
 
-        (new AccountLock())->lock($user->getTable(), $user->getKey());
+        (new AccountLock())->lock($user);
 
         $this->assertDatabaseCount('locked_accounts', 1);
         $this->assertDatabaseHas('locked_accounts', [
@@ -45,7 +85,7 @@ class AccountLockTest extends TestCase
 
         LockedAccount::factory()->forModel($user)->locked()->create();
 
-        (new AccountLock())->unlock($user->getTable(), $user->getKey());
+        (new AccountLock())->unlock($user);
 
         $this->assertDatabaseCount('locked_accounts', 1);
         $this->assertDatabaseHas('locked_accounts', [
@@ -65,9 +105,9 @@ class AccountLockTest extends TestCase
         LockedAccount::factory()->forModel($user1)->locked()->create();
         LockedAccount::factory()->forModel($user2)->unlocked()->create();
 
-        $this->assertTrue((new AccountLock())->isLocked('users', $user1->getKey()));
-        $this->assertFalse((new AccountLock())->isLocked('users', $user2->getKey()));
-        $this->assertFalse((new AccountLock())->isLocked('users', $user3->getKey()));
+        $this->assertTrue((new AccountLock())->isLocked($user1));
+        $this->assertFalse((new AccountLock())->isLocked($user2));
+        $this->assertFalse((new AccountLock())->isLocked($user3));
     }
 
     /** @test */
@@ -75,7 +115,7 @@ class AccountLockTest extends TestCase
     {
         $this->expectException(InexistingModelException::class);
 
-        (new AccountLock())->generateLockUrl((new User())->getTable(), 0, 60);
+        (new AccountLock())->generateLockUrl(new User(['id' => 0]), 60);
     }
 
     /** @test */
@@ -83,7 +123,7 @@ class AccountLockTest extends TestCase
     {
         $this->expectException(InexistingModelException::class);
 
-        (new AccountLock())->lock((new User())->getTable(), 0);
+        (new AccountLock())->lock(new User(['id' => 0]));
     }
 
     /** @test */
@@ -91,7 +131,7 @@ class AccountLockTest extends TestCase
     {
         $this->expectException(InexistingModelException::class);
 
-        (new AccountLock())->unlock((new User())->getTable(), 0);
+        (new AccountLock())->unlock(new User(['id' => 0]));
     }
 
     /** @test */
@@ -99,6 +139,6 @@ class AccountLockTest extends TestCase
     {
         $this->expectException(InexistingModelException::class);
 
-        (new AccountLock())->isLocked((new User())->getTable(), 0);
+        (new AccountLock())->isLocked(new User(['id' => 0]));
     }
 }

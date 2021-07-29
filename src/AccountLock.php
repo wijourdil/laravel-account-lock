@@ -2,29 +2,31 @@
 
 namespace Wijourdil\LaravelAccountLock;
 
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use InvalidArgumentException;
+use Wijourdil\LaravelAccountLock\Classes\Account;
 use Wijourdil\LaravelAccountLock\Exceptions\InexistingModelException;
 
 class AccountLock
 {
     /**
      * @throws InexistingModelException
+     * @throws InvalidArgumentException
      */
-    public function generateLockUrl(string $table, int $id, int $expiresInMinutes = null): string
+    public function generateLockUrl(Authenticatable $authenticatable, int $expiresInMinutes = null): string
     {
-        $this->protectAgainstInexistingAuthenticatable($table, $id);
+        $account = $this->getAccount($authenticatable);
 
         if (null === $expiresInMinutes) {
             (int)$expiresInMinutes = config('account-lock.url-lifetime-in-minutes');
         }
 
-        $data = Crypt::encrypt([
-            'table' => $table,
-            'id' => $id,
-        ]);
+        $data = Crypt::encrypt($account->toArray());
 
         return URL::temporarySignedRoute(
             'lock-account',
@@ -35,29 +37,31 @@ class AccountLock
 
     /**
      * @throws InexistingModelException
+     * @throws InvalidArgumentException
      */
-    public function isLocked(string $table, int $id): bool
+    public function isLocked(Authenticatable $authenticatable): bool
     {
-        $this->protectAgainstInexistingAuthenticatable($table, $id);
+        $account = $this->getAccount($authenticatable);
 
         return DB::table('locked_accounts')
-            ->where('authenticatable_table', '=', $table)
-            ->where('authenticatable_id', '=', $id)
+            ->where('authenticatable_table', '=', $account->getTable())
+            ->where('authenticatable_id', '=', $account->getIdentifierValue())
             ->where('is_locked', '=', true)
             ->exists();
     }
 
     /**
      * @throws InexistingModelException
+     * @throws InvalidArgumentException
      */
-    public function lock(string $table, int $id): void
+    public function lock(Authenticatable $authenticatable): void
     {
-        $this->protectAgainstInexistingAuthenticatable($table, $id);
+        $account = $this->getAccount($authenticatable);
 
         DB::table('locked_accounts')->updateOrInsert(
             [
-                'authenticatable_table' => $table,
-                'authenticatable_id' => $id,
+                'authenticatable_table' => $account->getTable(),
+                'authenticatable_id' => $account->getIdentifierValue(),
             ],
             [
                 'is_locked' => true,
@@ -68,14 +72,15 @@ class AccountLock
 
     /**
      * @throws InexistingModelException
+     * @throws InvalidArgumentException
      */
-    public function unlock(string $table, int $id): void
+    public function unlock(Authenticatable $authenticatable): void
     {
-        $this->protectAgainstInexistingAuthenticatable($table, $id);
+        $account = $this->getAccount($authenticatable);
 
         DB::table('locked_accounts')
-            ->where('authenticatable_table', '=', $table)
-            ->where('authenticatable_id', '=', $id)
+            ->where('authenticatable_table', '=', $account->getTable())
+            ->where('authenticatable_id', '=', $account->getIdentifierValue())
             ->update([
                 'is_locked' => false,
                 'unlocked_at' => now(),
@@ -83,25 +88,47 @@ class AccountLock
     }
 
     /**
+     * @throws InexistingModelException
      * @throws InvalidArgumentException
      */
-    public function tableNameForAuthProvider(string $provider): string
+    private function getAccount(Authenticatable $authenticatable): Account
     {
-        $config = config("auth.providers.$provider");
+        $table = $this->getTableNameForAuthenticatable($authenticatable);
 
-        if (empty($config)) {
-            throw new InvalidArgumentException("Auth provider '$provider' cannot be found in config('auth.providers')");
+        $this->protectAgainstInexistingAuthenticatable($table, $authenticatable->getAuthIdentifier());
+
+        return new Account(
+            table: $table,
+            identifierName: $authenticatable->getAuthIdentifierName(),
+            identifierValue: $authenticatable->getAuthIdentifier(),
+            type: $authenticatable::class,
+        );
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    private function getTableNameForAuthenticatable(Authenticatable $authenticatable): string
+    {
+        if ($authenticatable instanceof Model) {
+            return $authenticatable->getTable();
         }
 
-        if (isset($config['table'])) {
-            return $config['table'];
-        } elseif (isset($config['model'])) {
-            $class = $config['model'];
+        foreach (config('auth.guards') as $guardConfig) {
+            $retrievedUser = Auth::createUserProvider($guardConfig['provider'])->retrieveByCredentials([
+                $authenticatable->getRememberTokenName() => $authenticatable->getRememberToken(),
+                $authenticatable->getAuthIdentifierName() => $authenticatable->getAuthIdentifier(),
+            ]);
 
-            return (new $class())->getTable();
-        } else {
-            throw new InvalidArgumentException("Auth provider '$provider' does not have table or model defined.");
+            if (null !== $retrievedUser) {
+                return table_name_for_auth_provider($guardConfig['provider']);
+            }
         }
+
+        throw new InvalidArgumentException(
+            "Unable to determine the table to use for the Authenticatable " . $authenticatable::class .
+            " #{$authenticatable->getAuthIdentifier()}"
+        );
     }
 
     /**
