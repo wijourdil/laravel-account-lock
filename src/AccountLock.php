@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use InvalidArgumentException;
 use Wijourdil\LaravelAccountLock\Classes\Account;
+use Wijourdil\LaravelAccountLock\Events\AccountLocked;
+use Wijourdil\LaravelAccountLock\Events\AccountUnlocked;
 use Wijourdil\LaravelAccountLock\Exceptions\InexistingModelException;
 
 class AccountLock
@@ -68,6 +70,8 @@ class AccountLock
                 'locked_at' => now(),
             ]
         );
+
+        AccountLocked::dispatch($authenticatable);
     }
 
     /**
@@ -85,6 +89,8 @@ class AccountLock
                 'is_locked' => false,
                 'unlocked_at' => now(),
             ]);
+
+        AccountUnlocked::dispatch($authenticatable);
     }
 
     /**
