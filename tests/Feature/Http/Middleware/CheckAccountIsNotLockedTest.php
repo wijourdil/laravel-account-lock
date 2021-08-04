@@ -35,7 +35,7 @@ class CheckAccountIsNotLockedTest extends TestCase
             ->getJson('/test')
             ->assertForbidden()
             ->assertExactJson([
-                'message' => __('account-lock::translations.json-error-account-locked')
+                'message' => __('account-lock::translations.json-error-account-locked'),
             ]);
     }
 
