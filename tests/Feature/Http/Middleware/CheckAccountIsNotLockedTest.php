@@ -25,6 +25,20 @@ class CheckAccountIsNotLockedTest extends TestCase
         $this->get('/test')->assertSuccessful();
     }
 
+    /** @test */
+    public function it_returns_json_response_if_request_expects_json()
+    {
+        $user = UserFactory::new()->create();
+        LockedAccount::factory()->forModel($user)->locked()->create();
+
+        $this->be($user, 'api')
+            ->getJson('/test')
+            ->assertForbidden()
+            ->assertExactJson([
+                'message' => __('account-lock::translations.json-error-account-locked')
+            ]);
+    }
+
     /**
      * @test
      * @dataProvider guardsDataProvider

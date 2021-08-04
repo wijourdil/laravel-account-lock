@@ -3,6 +3,7 @@
 namespace Wijourdil\LaravelAccountLock\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +24,14 @@ class CheckAccountIsNotLocked
     {
         foreach (config('auth.guards') as $guardName => $guardConfig) {
             if ($this->someoneIsLoggedInAndLockedForGuard($guardName, $guardConfig)) {
-                return response()->view('account-lock::account-locked', [], Response::HTTP_FORBIDDEN);
+                if ($request->expectsJson()) {
+                    return new JsonResponse(
+                        ['message' => __('account-lock::translations.json-error-account-locked')],
+                        Response::HTTP_FORBIDDEN
+                    );
+                } else {
+                    return response()->view('account-lock::account-locked', [], Response::HTTP_FORBIDDEN);
+                }
             }
         }
 
